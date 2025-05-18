@@ -1,0 +1,24 @@
+[
+  {
+    "model": "levelupapi.event",
+    "pk": 1,
+    "fields": {
+      "game": 1,
+      "organizer": 1,
+      "description": "Beginner board game night",
+      "date": "2025-05-20",
+      "time": "18:00:00"
+    }
+  },
+  {
+    "model": "levelupapi.event",
+    "pk": 2,
+    "fields": {
+      "game": 2,
+      "organizer": 1,
+      "description": "Advanced DnD session",
+      "date": "2025-05-25",
+      "time": "19:30:00"
+    }
+  }
+]
