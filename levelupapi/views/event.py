@@ -2,7 +2,7 @@
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from levelupapi.models import Event
+from levelupapi.models import (Event,Game,Gamer,)  # import related models needed for create
 
 
 class EventView(ViewSet):
@@ -26,6 +26,24 @@ class EventView(ViewSet):
 
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
+
+    def create(self, request):
+        # Get related Game and Gamer instances from the request data
+        game = Game.objects.get(pk=request.data["game"])
+        organizer = Gamer.objects.get(uid=request.data["organizer"])
+
+        # Create the new Event object with the data from the request
+        event = Event.objects.create(
+            game=game,
+            organizer=organizer,
+            description=request.data["description"],
+            date=request.data["date"],
+            time=request.data["time"],
+        )
+
+        # Serialize and return the newly created event with HTTP 201
+        serializer = EventSerializer(event)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class EventSerializer(serializers.ModelSerializer):
