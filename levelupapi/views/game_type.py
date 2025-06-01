@@ -1,4 +1,8 @@
-"""View module for handling requests about game types"""
+"""View module for handling requests about game types
+
+GameTypeView handles API endpoints for listing and retrieving game types.
+It provides read-only access to all game types in the system.
+"""
 
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
@@ -16,6 +20,7 @@ class GameTypeView(ViewSet):
         Returns:
             Response -- JSON serialized game type
         """
+        # GET /gametypes/<pk>/ - Retrieve a single game type by primary key.
         try:
             game_type = GameType.objects.get(pk=pk)
             serializer = GameTypeSerializer(game_type)
@@ -29,6 +34,7 @@ class GameTypeView(ViewSet):
         Returns:
             Response -- JSON serialized list of game types
         """
+        # GET /gametypes/ - Retrieve all game types.
         game_types = GameType.objects.all()
         serializer = GameTypeSerializer(game_types, many=True)
         return Response(serializer.data)
@@ -39,4 +45,4 @@ class GameTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GameType
-        fields = ("id", "label")
+        fields = ("id", "label")  # id: unique identifier, label: name of the game type

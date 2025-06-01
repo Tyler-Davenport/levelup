@@ -1,4 +1,5 @@
-# levelupapi/views/game.py
+# GameView handles API endpoints for listing, retrieving, creating, updating, and deleting games.
+# It provides CRUD operations for games and uses GameSerializer for serialization.
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -9,6 +10,7 @@ class GameView(ViewSet):
     """Level up games view"""
 
     def retrieve(self, request, pk):
+        # GET /games/<pk>/ - Retrieve a single game by primary key.
         try:
             game = Game.objects.get(pk=pk)
             serializer = GameSerializer(game)
@@ -17,6 +19,7 @@ class GameView(ViewSet):
             return Response({"message": ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
     def list(self, request):
+        # GET /games/ - Retrieve all games, optionally filtered by game_type.
         games = Game.objects.all()
 
         # Optional filter by game_type query param
@@ -28,6 +31,7 @@ class GameView(ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
+        # POST /games/ - Create a new game.
         gamer = Gamer.objects.get(uid=request.data["userId"])
         game_type = GameType.objects.get(pk=request.data["gameType"])
 
@@ -44,12 +48,7 @@ class GameView(ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, pk):
-        """Handle PUT requests for a game
-
-        Returns:
-            Response -- Empty body with 204 status code
-        """
-
+        # PUT /games/<pk>/ - Update an existing game.
         game = Game.objects.get(pk=pk)
         game.title = request.data["title"]
         game.maker = request.data["maker"]
@@ -63,20 +62,23 @@ class GameView(ViewSet):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     def destroy(self, request, pk):
+        # DELETE /games/<pk>/ - Delete a game.
         game = Game.objects.get(pk=pk)
         game.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
+
+# GameSerializer serializes Game objects for API responses.
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = (
-            "id",
-            "game_type",
-            "title",
-            "maker",
-            "gamer",
-            "number_of_players",
-            "skill_level",
+            "id",  # Game's unique identifier
+            "game_type",  # ForeignKey to the GameType model
+            "title",  # Title of the game
+            "maker",  # Maker or publisher of the game
+            "gamer",  # ForeignKey to the Gamer model (owner/creator)
+            "number_of_players",  # Number of players required
+            "skill_level",  # Skill level required to play
         )
-        depth = 1
+        depth = 1  # Serializes related objects (game_type, gamer) with their fields
